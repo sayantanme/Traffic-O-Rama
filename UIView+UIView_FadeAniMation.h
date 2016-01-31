@@ -11,4 +11,6 @@
 @interface UIView (UIView_FadeAniMation)
 -(void)lock;
 -(void)unlock;
+-(void)fadeOut:(NSTimeInterval)duration;
+-(void)fadeIn:(NSTimeInterval)duration;
 @end

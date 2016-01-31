@@ -37,8 +37,18 @@
     if (lockView) {
         [UIView animateWithDuration:0.2 animations:^{
             lockView.alpha = 0.0;
-            [lockView removeFromSuperview]; 
+            [lockView removeFromSuperview];
         }];
     }
+}
+-(void)fadeOut:(NSTimeInterval)duration{
+    [UIView animateWithDuration:duration animations:^{
+        self.alpha = 0.0;
+    }];
+}
+-(void)fadeIn:(NSTimeInterval)duration{
+    [UIView animateWithDuration:duration animations:^{
+        self.alpha = 1.0;
+    }];
 }
 @end

@@ -9,6 +9,11 @@
 #import "MapViewController.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import "UIView+UIView_FadeAniMation.h"
+#import "GoogleDataProvider.h"
+#import "GooglePlace.h"
+#import "Placemarker.h"
+#import "MarkerInfoView.h"
+#import <UIKit/UIKit.h>
 
 
 @interface MapViewController ()<GMSMapViewDelegate>
@@ -16,7 +21,9 @@
 @property (strong,nonatomic) CLLocationManager *locationManager;
 @property (weak, nonatomic) IBOutlet UILabel *locationText;
 @property (weak, nonatomic) IBOutlet UIImageView *pinImage;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *refresh;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *pinImageVerticalContraint;
+@property (strong, nonatomic) NSArray *types;
 @end
 
 @implementation MapViewController
@@ -28,6 +35,7 @@
     self.mapView.delegate = self;
     [self.locationManager requestWhenInUseAuthorization];
     self.locationText.text = @"For Test";
+    self.types = @[@"bakery", @"bar", @"cafe", @"grocery_or_supermarket", @"restaurant"];
     // Do any additional setup after loading the view.
 }
 
@@ -57,6 +65,23 @@
     }];
 }
 
+-(void)fetchNearbyPlaces:(CLLocationCoordinate2D)coordinate {
+    [self.mapView clear];
+    GoogleDataProvider *dDataProvider = [[GoogleDataProvider alloc]init];
+    //NSMutableArray *googlePlacesArray = [[NSMutableArray alloc]init];
+    [dDataProvider fetchPlacesNearCoordinate:coordinate withRadius:1000 Type:self.types andCompletetion:^(NSMutableArray *googlePlacesArray) {
+        for (GooglePlace *place in googlePlacesArray) {
+            Placemarker *marker = [[Placemarker alloc]init:place];
+            marker.map = self.mapView;
+            NSLog(@"place:%@,lat:%f, lon:%f",place.name,place.coordinate.latitude,place.coordinate.longitude);
+        }
+    }];
+    
+}
+- (IBAction)refresh:(UIBarButtonItem *)sender {
+    [self fetchNearbyPlaces:self.mapView.camera.target];
+}
+
 #pragma mark - GMSMapViewDelegate
 -(void)mapView:(GMSMapView *)mapView idleAtCameraPosition:(GMSCameraPosition *)position{
     [self reverseGeoCoordinate:position.target];
@@ -64,6 +89,36 @@
 
 -(void)mapView:(GMSMapView *)mapView willMove:(BOOL)gesture{
     [self.locationText lock];
+    if (gesture) {
+        [self.pinImage fadeIn:0.25];
+        self.mapView.selectedMarker = nil;
+    }
+}
+
+-(UIView *)mapView:(GMSMapView *)mapView markerInfoContents:(GMSMarker *)marker
+{
+    Placemarker *placeMarker = (Placemarker *)marker;
+    NSArray *views = [[NSBundle mainBundle]loadNibNamed:@"MarkerInfoView" owner:nil options:nil];
+    MarkerInfoView *infoView = (MarkerInfoView *)[views firstObject];
+    
+    if (infoView) {
+        infoView.name.text = placeMarker.gPlace.name;
+        UIImage *img = placeMarker.gPlace.image;
+        if (img) {
+            infoView.imgPlace.image = img;
+        } else {
+            infoView.imgPlace.image = [UIImage imageNamed:@"generic"];
+        }
+        return infoView;
+    } else {
+        return nil;
+    }
+}
+
+-(BOOL) mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker
+{
+    [self.pinImage fadeOut:0.25];
+    return false;
 }
 
 

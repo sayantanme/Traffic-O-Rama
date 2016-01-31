@@ -54,6 +54,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="y3L-pI-GIQ">
+                        <barButtonItem key="leftBarButtonItem" systemItem="refresh" id="0cZ-IW-vZ9">
+                            <connections>
+                                <action selector="refresh:" destination="yj0-Op-05E" id="FYM-H1-E3O"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="filter" id="Uyj-XM-TeB"/>
                     </navigationItem>
                     <connections>
@@ -61,11 +66,12 @@
                         <outlet property="mapView" destination="pFg-Z1-aRc" id="GgG-eR-DmK"/>
                         <outlet property="pinImage" destination="rjd-q6-1kT" id="tIZ-Lb-sEg"/>
                         <outlet property="pinImageVerticalContraint" destination="YKv-US-bAJ" id="Xup-hD-TUj"/>
+                        <outlet property="refresh" destination="0cZ-IW-vZ9" id="qE4-fY-uex"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hbZ-xd-QEa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2285" y="691"/>
+            <point key="canvasLocation" x="2218" y="600"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="AdS-t3-smC">
